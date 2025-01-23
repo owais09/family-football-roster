@@ -1,0 +1,71 @@
+# Python Bytecode
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+
+# Virtual Environments
+env/
+venv/
+.venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Streamlit Secrets
+.streamlit/secrets.toml
+
+# Jupyter Notebook Checkpoints
+.ipynb_checkpoints/
+
+# Logs
+*.log
+*.out
+*.err
+
+# IDE and Editor Files
+.vscode/
+.idea/
+*.sublime-workspace
+*.sublime-project
+
+# OS Generated Files
+.DS_Store
+Thumbs.db
+
+# Test Coverage Reports
+htmlcov/
+.coverage
+*.cover
+*.py,cover
+
+# Environment Variables
+.env
+.env.*
+
+# Python Egg Info
+*.egg
+*.egg-info/
+dist/
+build/
+.eggs/
+
+# PyInstaller Files
+*.spec
+
+# Mypy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Pyre
+.pyre/
+
+# Coverage
+.pytest_cache/
+
+# Wheels
+*.whl
+
+# Streamlit Cache
+.streamlit/cache/

@@ -1,0 +1,1 @@
+DELETE FROM public.signups WHERE player_id = %s and week = %s

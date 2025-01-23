@@ -1,0 +1,1 @@
+select week, session_date, booking_amount from public.booking_references

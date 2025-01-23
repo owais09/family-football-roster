@@ -1,0 +1,1 @@
+INSERT INTO public.players (name, email_id) VALUES (%s, %s) RETURNING player_id
