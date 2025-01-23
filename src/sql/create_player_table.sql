@@ -1,0 +1,3 @@
+CREATE TABLE IF NOT EXISTS public.players (player_id SERIAL PRIMARY KEY,
+name TEXT NOT NULL,
+email_id TEXT NOT NULL);

@@ -1,0 +1,1 @@
+INSERT INTO public.signups (week, player_id) VALUES (%s, %s)
