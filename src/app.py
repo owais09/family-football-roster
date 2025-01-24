@@ -62,6 +62,7 @@ if menu == "Player Signup":
     with st.form("removal form"):
         st.subheader("Remove name from weekly list")
         player_email_to_delete = st.text_input("Enter Player Email to Remove:")
+        player_email_to_delete = validate_name_email(player_email_to_delete, 'email')
         delete_button = st.form_submit_button("Remove Player")
         if delete_button:
             player_id_list = db.get_player_id(player_email_to_delete)
