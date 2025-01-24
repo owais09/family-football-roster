@@ -6,8 +6,8 @@ from signups import add_player_signup,is_already_signed_up
 from helper import validate_name_email
 
 # Initialize the database handler
-
-environment = st.secrets['environment']
+#
+environment = 'live'
 db = DatabaseHandler(environment=environment)
 
 # Set up page config
