@@ -9,12 +9,12 @@ class DatabaseHandler:
         self.conn = self.init_connection()
 
     def init_connection(self):
-            return psycopg2.connect(
-                host=st.secrets["postgres"]["host"],
-                port=st.secrets["postgres"]["port"],
-                database=st.secrets["postgres"]["database"],
-                user=st.secrets["postgres"]["user"],
-                password=st.secrets["postgres"]["password"])
+        return psycopg2.connect(
+            host=st.secrets["postgres"]["host"],
+            port=st.secrets["postgres"]["port"],
+            database=st.secrets["postgres"]["database"],
+            user=st.secrets["postgres"]["user"],
+            password=st.secrets["postgres"]["password"])
 
     def load_sql(self, file_name):
         sql_path = os.path.join("src", "sql", file_name)
