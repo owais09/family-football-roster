@@ -1,6 +1,7 @@
 import psycopg2
 import streamlit as st
 import os
+import pandas as pd
 
 
 class DatabaseHandler:
@@ -64,6 +65,10 @@ class DatabaseHandler:
                 self.conn.rollback()
                 st.error(f"An error occurred: {str(e)}")
 
+    def get_all_players_in_db(self):
+        player_id_query = self.load_sql("get_ail_player_in_database.sql")
+        all_players_in_db = pd.read_sql(player_id_query,con= self.conn)
+        return all_players_in_db
 
     def fetch_signups(self, week):
         fetch_signups_query = self.load_sql("get_weekly_signups.sql")
