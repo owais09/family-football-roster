@@ -1,7 +1,6 @@
 import psycopg2
 import streamlit as st
 import os
-import pandas as pd
 
 
 class DatabaseHandler:
@@ -27,11 +26,6 @@ class DatabaseHandler:
         with self.conn.cursor() as cur:
             cur.execute(create_tables_query)
             self.conn.commit()
-
-    def get_all_players_in_db(self):
-        player_id_query = self.load_sql("get_ail_player_in_database.sql")
-        all_players_in_db = pd.read_sql(player_id_query,con= self.conn)
-        return all_players_in_db
 
     def get_player_id(self,email):
         player_id_query = self.load_sql("get_player_id_from_player_dimensions.sql")

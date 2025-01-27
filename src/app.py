@@ -41,27 +41,19 @@ if menu == "Player Signup":
     current_week = f"{current_year}-W{current_week:02d}"
 
     participants = db.fetch_signups(current_week)
-    participants_df = pd.DataFrame(participants, columns=["name", "email_id"])
-
-    all_player_signup = db.get_all_players_in_db()
     st.metric(f"Participants signed up for week: {current_week}", len(participants))
-
-    choice = st.selectbox("Player Type", ["Select", "New Player", "Existing Player"],
-                          index=None)
 
     # Signup form
     with st.form("signup_form"):
         st.subheader("Signup to Weekly Football")
+        name = st.text_input("Your Name", placeholder="Enter your name")
+        email = st.text_input("Your Email", placeholder="Enter your Email")
 
-        if choice =='New Player':
-            name = st.text_input("Your Name", placeholder="Enter your name")
-            email = st.text_input("Your Email", placeholder="Enter your Email")
-            name = validate_name_email(name, 'name')
-            email = validate_name_email(email, 'email')
-        elif choice == 'Existing Player':
-            email = st.selectbox("Choose name", all_player_signup['email_id'].to_list(),index=None)
-            name = all_player_signup[all_player_signup['email_id']==email]['name']
+        name = validate_name_email(name, 'name')
+        email = validate_name_email(email, 'email')
 
+        choice = st.selectbox("Player Type", ["Select", "New Player", "Existing Player"],
+                              index=None)
         submitted = st.form_submit_button("Sign Up")
         if submitted:
             add_player_signup(db, choice, name, current_week, email)
@@ -90,7 +82,7 @@ if menu == "Player Signup":
     # Show participant list
     st.subheader("Participants")
     if participants:
-        st.write(pd.DataFrame(participants, columns=["Name","Email"]))
+        st.write(pd.DataFrame(participants, columns=["Name"]))
     else:
         st.write("No one has signed up yet! Be the first!")
 
