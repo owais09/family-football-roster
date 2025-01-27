@@ -1,0 +1,1 @@
+SELECT name, email_id FROM public.players
