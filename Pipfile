@@ -8,7 +8,6 @@ pandas = "*"
 streamlit = "*"
 plotly = "*"
 psycopg2-binary = "*"
-twilio = "*"
 pywhatkit = "*"
 
 [dev-packages]
