@@ -66,7 +66,7 @@ class DatabaseHandler:
                 st.error(f"An error occurred: {str(e)}")
 
     def get_all_players_in_db(self):
-        player_id_query = self.load_sql("get_ail_player_in_database.sql")
+        player_id_query = self.load_sql("get_all_player_in_database.sql")
         all_players_in_db = pd.read_sql(player_id_query,con= self.conn)
         return all_players_in_db
 
