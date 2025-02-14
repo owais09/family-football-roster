@@ -1,9 +1,11 @@
+from gc import disable
+
 import streamlit as st
 from datetime import datetime
 import pandas as pd
 from database import DatabaseHandler
 from signups import add_player_signup,is_already_signed_up
-from helper import validate_name_email
+from helper import validate_name_email,validate_email
 
 # Initialize the database handler
 #
@@ -18,8 +20,14 @@ st.set_page_config(
 )
 
 # Main app
-st.title("⚽ Family Football App")
-st.markdown("Welcome to the Family Football Management App! 🎉")
+with st.container():
+    st.markdown("""
+        <div style="text-align: center; background-color: #000000; padding: 20px;
+         border-radius: 10px; border: 7px solid #6699cc;">
+            <h1>⚽ Family Football App</h1>
+            <h3>Welcome to the Family Football Management App! 🎉</h3>
+        </div>
+    """, unsafe_allow_html=True)
 
 db.create_tables('create_player_table.sql')
 db.create_tables('create_signup_table.sql')
@@ -41,8 +49,13 @@ if menu == "Player Signup":
     current_week = f"{current_year}-W{current_week:02d}"
 
     participants = db.fetch_signups(current_week)
-    participants_df = pd.DataFrame(participants, columns=["name", "email_id"])
-    st.metric(f"Participants signed up for week: {current_week}", len(participants))
+    participants_df = pd.DataFrame(participants, columns=["name", "email_id"]).dropna()
+    with st.container():
+        st.markdown(f"""
+            <h3 style="text-align: center; color: #80dfff;">
+                🔥 Participants Signed Up for Week {current_week}: {len(participants)} 🔥
+            </h3>
+        """, unsafe_allow_html=True)
 
     all_player_signup = db.get_all_players_in_db()
 
@@ -59,15 +72,20 @@ if menu == "Player Signup":
         elif choice == 'Existing Player':
             email = st.selectbox("Choose name", all_player_signup['email_id'].to_list(),index=None)
             name = all_player_signup[all_player_signup['email_id']==email]['name']
+            name = name[0] if len(name) > 0 else None
         submitted = st.form_submit_button("Sign Up")
         if submitted:
-            add_player_signup(db, choice, name, current_week, email)
-            st.success(f"Thanks for signing up, {name}!")
+            if not name or not email:
+                st.error("Name and email are required!")
+            elif validate_email(email):
+                add_player_signup(db, choice, name, current_week, email)
+                st.success(f"Thanks for signing up, {name}!")
+            else:
+                st.error("Invalid email. Please try again.")
 
     with st.form("removal form"):
         st.subheader("Remove name from weekly list")
-        player_email_to_delete = st.text_input("Enter Player Email to Remove:")
-        player_email_to_delete = validate_name_email(player_email_to_delete, 'email')
+        player_email_to_delete = st.selectbox("Choose name", participants_df['email_id'].to_list(), index=None)
         delete_button = st.form_submit_button("Remove Player")
         if delete_button:
             player_id_list = db.get_player_id(player_email_to_delete)
