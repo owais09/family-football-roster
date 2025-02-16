@@ -22,10 +22,26 @@ st.set_page_config(
 # Main app
 with st.container():
     st.markdown("""
-        <div style="text-align: center; background-color: #000000; padding: 20px;
-         border-radius: 10px; border: 7px solid #6699cc;">
-            <h1>⚽ Family Football App</h1>
-            <h3>Welcome to the Family Football Management App! 🎉</h3>
+        <style>
+            .header-container {
+                text-align: center;
+                background-color: #000000;
+                color: white;
+                padding: 15px;
+                border-radius: 10px;
+                border: 5px solid #6699cc;
+            }
+            .header-container h1 {
+                font-size: clamp(1.2rem, 4vw, 3rem);  /* Scales between 1.5rem and 3rem */
+            }
+            .header-container h3 {
+                font-size: clamp(1rem, 2.0vw, 1.2rem);  /* Scales between 1rem and 1.5rem */
+            }
+        </style>
+
+        <div class="header-container">
+            <h1>⚽ Family Football App ⚽</h1>
+            <h3>Welcome to the Family Football Signup App! 🎉</h3>
         </div>
     """, unsafe_allow_html=True)
 
@@ -43,27 +59,99 @@ current_date = datetime.now()
 current_year = current_date.isocalendar()[0]
 current_week = current_date.isocalendar()[1]
 
+current_week = f"{current_year}-W{current_week:02d}"
+
+participants = db.fetch_signups(current_week)
+participants_df = pd.DataFrame(participants, columns=["name", "email_id"]).dropna()
+
+with st.container():
+    st.markdown(f"""
+        <style>
+            .participant-header {{
+                text-align: center; 
+                color: #80dfff; 
+                font-weight: bold;
+                font-size: 1.1rem;  /* Default size for desktops */
+                margin-top: 10px;
+            }}
+
+            /* Adjust font size for tablets */
+            @media screen and (max-width: 768px) {{
+                .participant-header {{
+                    font-size: 1rem;  /* Slightly smaller text for tablets */
+                }}
+            }}
+
+            /* Further reduce font size on mobile screens */
+            @media screen and (max-width: 480px) {{
+                .participant-header {{
+                    font-size: 0.9rem;  /* Smaller text for mobile phones */
+                }}
+            }}
+        </style>
+        <p class="participant-header">
+             Participants Signed Up for Week {current_week}: {len(participants)}
+        </p>
+    """, unsafe_allow_html=True)
+
+
 # --- Player Signup Section ---
 if menu == "Player Signup":
-    # Format as YYYY-WWW
-    current_week = f"{current_year}-W{current_week:02d}"
-
-    participants = db.fetch_signups(current_week)
-    participants_df = pd.DataFrame(participants, columns=["name", "email_id"]).dropna()
-    with st.container():
-        st.markdown(f"""
-            <h3 style="text-align: center; color: #80dfff;">
-                🔥 Participants Signed Up for Week {current_week}: {len(participants)} 🔥
-            </h3>
-        """, unsafe_allow_html=True)
+    # Format as YYYY-WW
 
     all_player_signup = db.get_all_players_in_db()
-
-    choice = st.selectbox("Player Type", ["Select", "New Player", "Existing Player"],
-                          index=None)
+    #
+    # choice = st.selectbox("Pla", ["Select", "New Player", "Existing Player"],
+    #                       index=None)
     # Signup form
     with st.form("signup_form"):
-        st.subheader("Signup to Weekly Football")
+        st.markdown("""
+            <style>
+                .subheader {
+                    font-size: 1.5rem;
+                    color: #6B8E23;
+                    text-align: center;
+                    font-weight: bold;
+                }
+                @media screen and (max-width: 768px) {
+                    .subheader { font-size: 1.2rem; }
+                }
+                @media screen and (max-width: 480px) {
+                    .subheader { font-size: 1rem; }
+                }
+            </style>
+            <p class="subheader">Signup to Weekly Football ✅</p>
+        """, unsafe_allow_html=True)
+
+        st.markdown("""
+            <style>
+                /* Center the form and its content */
+                .stForm {
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    text-align: center;
+                }
+                .stButton > button {
+                    font-size: 16px;
+                    padding: 10px 20px;
+                }
+            </style>
+        """, unsafe_allow_html=True)
+        name = 'Placeholder'
+        email = 'Placeholder'
+
+        st.markdown("""
+            <style>
+                .stSelectbox {
+                    margin-top: -30px;
+                    margin-bottom: -10px;
+                }
+            </style>
+        """, unsafe_allow_html=True)
+
+        choice = st.selectbox("", ["Select", "New Player", "Existing Player"],
+                              index=None)
         if choice =='New Player':
             name = st.text_input("Your Name", placeholder="Enter your name")
             email = st.text_input("Your Email", placeholder="Enter your Email")
@@ -73,19 +161,38 @@ if menu == "Player Signup":
             email = st.selectbox("Choose name", all_player_signup['email_id'].to_list(),index=None)
             name = all_player_signup[all_player_signup['email_id']==email]['name']
             name = name[0] if len(name) > 0 else None
-        submitted = st.form_submit_button("Sign Up")
+
+        submitted = st.form_submit_button("Submit")
         if submitted:
-            if not name or not email:
+            if name =='Placeholder' and email == 'Placeholder':
+                st.error('Signup Type missing. Choose player type')
+            elif not name or not email:
                 st.error("Name and email are required!")
             elif validate_email(email):
                 add_player_signup(db, choice, name, current_week, email)
                 st.success(f"Thanks for signing up, {name}!")
             else:
                 st.error("Invalid email. Please try again.")
-
     with st.form("removal form"):
-        st.subheader("Remove name from weekly list")
-        player_email_to_delete = st.selectbox("Choose name", participants_df['email_id'].to_list(), index=None)
+        st.markdown("""
+            <style>
+                .subheader-red {
+                    font-size: 1.5rem;
+                    color: #B55A4A; /* Dull Red */
+                    text-align: center;
+                    font-weight: bold;
+                }
+                @media screen and (max-width: 768px) {
+                    .subheader-red { font-size: 1.2rem; }
+                }
+                @media screen and (max-width: 480px) {
+                    .subheader-red { font-size: 1rem; }
+                }
+            </style>
+            <p class="subheader-red">Remove name from weekly signup 🚫</p>
+        """, unsafe_allow_html=True)
+
+        player_email_to_delete = st.selectbox("", participants_df['email_id'].to_list(), index=None)
         delete_button = st.form_submit_button("Remove Player")
         if delete_button:
             player_id_list = db.get_player_id(player_email_to_delete)
@@ -103,7 +210,36 @@ if menu == "Player Signup":
 
 
     # Show participant list
-    st.subheader("Participants")
+    with st.container():
+        st.markdown(f"""
+            <style>
+                .participant-header-second {{
+                    text-align: center; 
+                    color: #FFFFFF; 
+                    font-weight: bold;
+                    font-size: 1.1rem;  /* Default size for desktops */
+                    margin-top: 10px;
+                }}
+
+                /* Adjust font size for tablets */
+                @media screen and (max-width: 768px) {{
+                    .participant-header-second {{
+                        font-size: 1rem;  /* Slightly smaller text for tablets */
+                    }}
+                }}
+
+                /* Further reduce font size on mobile screens */
+                @media screen and (max-width: 480px) {{
+                    .participant-header-second {{
+                        font-size: 0.9rem;  /* Smaller text for mobile phones */
+                    }}
+                }}
+            </style>
+            <p class="participant-header-second">
+                 Participants Signed Up for Week {current_week}
+            </p>
+        """, unsafe_allow_html=True)
+
     if participants:
         st.write(pd.DataFrame(participants, columns=["Name", "Email"]))
     else:
@@ -138,6 +274,4 @@ if menu == "Admin Dashboard":
             if booking_submitted:
                 db.insert_bookings(current_week,amount,booking_date, number_of_players)
                 st.success(f"Booking added for {booking_date} with amount £{amount}!")
-    else:
-        st.error("Invalid password.")
 

@@ -105,5 +105,4 @@ def add_signup(db, name, week, player_id):
     Returns:
         None
     """
-    db.add_weekly_signups(name,week, player_id)
-    st.success("Signup successfully recorded!")
+    return db.add_weekly_signups(name,week, player_id)
