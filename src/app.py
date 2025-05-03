@@ -192,10 +192,10 @@ if menu == "Player Signup":
                     text-align: center;
                     font-weight: bold;
                 }
-                @media screen and (max-width: 768px) {
+                @media screen and (max-width: 658px) {
                     .subheader-red { font-size: 1.2rem; }
                 }
-                @media screen and (max-width: 480px) {
+                @media screen and (max-width: 400px) {
                     .subheader-red { font-size: 1rem; }
                 }
             </style>
