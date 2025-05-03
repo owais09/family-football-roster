@@ -51,8 +51,8 @@ db.create_tables('create_booking_table.sql')
 
 
 # --- Sidebar ---
-st.sidebar.header("Navigation")
-menu = st.sidebar.radio("Go to", ["Player Signup", "Admin Dashboard"])
+# st.sidebar.header("Navigation")
+# menu = st.sidebar.radio("Go to", ["Player Signup", "Admin Dashboard"])
 
 current_date = datetime.now()
 
@@ -94,6 +94,9 @@ with st.container():
         </p>
     """, unsafe_allow_html=True)
 
+st.sidebar.header("Navigation")
+menu = st.sidebar.radio("Go to", ["Player Signup", "Admin Dashboard"])
+
 
 # --- Player Signup Section ---
 if menu == "Player Signup":
@@ -101,78 +104,85 @@ if menu == "Player Signup":
 
     all_player_signup = db.get_all_players_in_db()
     #
-    # choice = st.selectbox("Pla", ["Select", "New Player", "Existing Player"],
+    # choice = st.selectbox("", ["Select", "New Player", "Existing Player"],
     #                       index=None)
     # Signup form
+    # Markdown styling
+    st.markdown("""
+        <style>
+            .subheader {
+                font-size: 1.5rem;
+                color: #6B8E23;
+                text-align: center;
+                font-weight: bold;
+            }
+            @media screen and (max-width: 768px) {
+                .subheader { font-size: 1.2rem; }
+            }
+            @media screen and (max-width: 480px) {
+                .subheader { font-size: 1rem; }
+            }
+        </style>
+        <p class="subheader">Signup to Weekly Football ✅</p>
+    """, unsafe_allow_html=True)
+
+    st.markdown("""
+        <style>
+            /* Center the form and its content */
+            .stForm {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                text-align: center;
+            }
+            .stButton > button {
+                font-size: 16px;
+                padding: 10px 20px;
+            }
+        </style>
+    """, unsafe_allow_html=True)
+
+    st.markdown("""
+        <style>
+            .stSelectbox {
+                margin-top: -30px;
+                margin-bottom: -10px;
+            }
+        </style>
+    """, unsafe_allow_html=True)
+
+    # Selectbox for player type
+    choice = st.selectbox("", ["Select", "New Player", "Existing Player", "Guest"], index=0)
+
+    name = 'Placeholder'
+    email = 'Placeholder'
+    # Handle form fields based on player type
+    if choice == 'New Player':
+        name = st.text_input("", placeholder="Enter your name")
+        email = st.text_input("", placeholder="Enter your Email")
+        name = validate_name_email(name, 'name')
+        email = validate_name_email(email, 'email')
+    elif choice == 'Existing Player':
+        email = st.selectbox("", all_player_signup['email_id'], index=None)
+        name = str(all_player_signup['name'][all_player_signup['email_id']==email])
+    elif choice == 'Guest':
+        name = st.text_input("", placeholder="Enter your name")
+        st.markdown("<br>", unsafe_allow_html=True)
+        email = st.selectbox("Host Email", all_player_signup['email_id'], index=None)
+    # Now handle the form itself
     with st.form("signup_form"):
-        st.markdown("""
-            <style>
-                .subheader {
-                    font-size: 1.5rem;
-                    color: #6B8E23;
-                    text-align: center;
-                    font-weight: bold;
-                }
-                @media screen and (max-width: 768px) {
-                    .subheader { font-size: 1.2rem; }
-                }
-                @media screen and (max-width: 480px) {
-                    .subheader { font-size: 1rem; }
-                }
-            </style>
-            <p class="subheader">Signup to Weekly Football ✅</p>
-        """, unsafe_allow_html=True)
-
-        st.markdown("""
-            <style>
-                /* Center the form and its content */
-                .stForm {
-                    display: flex;
-                    justify-content: center;
-                    align-items: center;
-                    text-align: center;
-                }
-                .stButton > button {
-                    font-size: 16px;
-                    padding: 10px 20px;
-                }
-            </style>
-        """, unsafe_allow_html=True)
-        name = 'Placeholder'
-        email = 'Placeholder'
-
-        st.markdown("""
-            <style>
-                .stSelectbox {
-                    margin-top: -30px;
-                    margin-bottom: -10px;
-                }
-            </style>
-        """, unsafe_allow_html=True)
-
-        choice = st.selectbox("", ["Select", "New Player", "Existing Player"],
-                              index=None)
-        if choice =='New Player':
-            name = st.text_input("Your Name", placeholder="Enter your name")
-            email = st.text_input("Your Email", placeholder="Enter your Email")
-            name = validate_name_email(name, 'name')
-            email = validate_name_email(email, 'email')
-        elif choice == 'Existing Player':
-            email = st.selectbox("Choose name", all_player_signup['email_id'].to_list(),index=None)
-            name = all_player_signup[all_player_signup['email_id']==email]['name']
-            name = name[0] if len(name) > 0 else None
-
+        # Submit button
         submitted = st.form_submit_button("Submit")
-        if submitted:
-            if name =='Placeholder' and email == 'Placeholder':
-                st.error('Signup Type missing. Choose player type')
-            elif not name or not email:
-                st.error("Name and email are required!")
-            elif validate_email(email):
-                add_player_signup(db, choice, name, current_week, email)
-                st.success(f"Thanks for signing up, {name}!")
-            else:
-                st.error("Invalid email. Please try again.")
+    if submitted:
+        if name =='Placeholder' and email == 'Placeholder':
+            st.error('Signup Type missing. Choose player type')
+        elif not name or not email:
+            st.error("Name and email are required!")
+        elif validate_email(email):
+            add_player_signup(db, choice, name, current_week, email)
+            st.success(f"Thanks for signing up, {name}!")
+        else:
+            st.error("Invalid email. Please try again.")
     with st.form("removal form"):
         st.markdown("""
             <style>
