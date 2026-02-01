@@ -14,16 +14,22 @@ class DatabaseHandler:
         # Get database config from secrets.toml or environment variables
         db_config = get_database_config()
         
-        conn = psycopg2.connect(
-            host=db_config['host'],
-            port=db_config['port'],
-            database=db_config['database'],
-            user=db_config['user'],
-            password=db_config['password'])
-        
-        # Set autocommit for DDL operations to avoid transaction issues
-        conn.set_session(autocommit=False)
-        return conn
+        try:
+            conn = psycopg2.connect(
+                host=db_config['host'],
+                port=db_config['port'],
+                database=db_config['database'],
+                user=db_config['user'],
+                password=db_config['password'],
+                connect_timeout=10)  # 10 second timeout
+            
+            # Set autocommit for DDL operations to avoid transaction issues
+            conn.set_session(autocommit=False)
+            return conn
+        except psycopg2.OperationalError as e:
+            raise Exception(f"Database connection failed: {str(e)}. Please check your DATABASE_URL environment variable.")
+        except Exception as e:
+            raise Exception(f"Unexpected database error: {str(e)}")
     
     def ensure_connection(self):
         """Ensure connection is in a good state, rollback if needed"""

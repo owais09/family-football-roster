@@ -27,8 +27,15 @@ def get_services(_db):
     return booking_mgr, whatsapp, invoice_gen
 
 # Initialize (only once thanks to caching)
-db = get_database_handler()
-booking_manager, whatsapp_notifier, invoice_generator = get_services(db)
+try:
+    with st.spinner("Connecting to database..."):
+        db = get_database_handler()
+    with st.spinner("Initializing services..."):
+        booking_manager, whatsapp_notifier, invoice_generator = get_services(db)
+except Exception as e:
+    st.error(f"⚠️ Failed to initialize app: {str(e)}")
+    st.info("Please check your database connection and environment variables.")
+    st.stop()
 
 # No background scraper - we'll scrape on-demand when admin needs it
 # This is more efficient and works on all platforms
@@ -89,7 +96,12 @@ def init_database_schema(_db):
     return True
 
 # Run schema initialization (cached, so only happens once)
-init_database_schema(db)
+try:
+    with st.spinner("Setting up database schema..."):
+        init_database_schema(db)
+except Exception as e:
+    st.warning(f"Schema initialization warning: {str(e)}")
+    # Continue anyway - tables might already exist
 
 
 # --- Sidebar ---
