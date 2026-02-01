@@ -8,5 +8,9 @@ pandas = "*"
 streamlit = "*"
 plotly = "*"
 psycopg2-binary = "*"
+selenium = "*"
+webdriver-manager = "*"
+schedule = "*"
+pywhatkit = "*"
 
 [dev-packages]
