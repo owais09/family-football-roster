@@ -1,0 +1,78 @@
+# DigitalOcean App Platform configuration
+name: family-football-app
+region: lon
+
+services:
+  - name: web
+    github:
+      repo: your-username/family-football-roster
+      branch: main
+      deploy_on_push: true
+    
+    dockerfile_path: Dockerfile
+    
+    http_port: 8501
+    
+    instance_size_slug: basic-xs
+    instance_count: 1
+    
+    health_check:
+      http_path: /_stcore/health
+      initial_delay_seconds: 10
+      period_seconds: 30
+      timeout_seconds: 10
+      success_threshold: 1
+      failure_threshold: 3
+    
+    envs:
+      # PostgreSQL connection (from Supabase or other provider)
+      - key: POSTGRES_HOST
+        value: ${DATABASE_HOST}
+        type: SECRET
+      
+      - key: POSTGRES_PORT
+        value: "5432"
+      
+      - key: POSTGRES_DATABASE
+        value: ${DATABASE_NAME}
+        type: SECRET
+      
+      - key: POSTGRES_USER
+        value: ${DATABASE_USER}
+        type: SECRET
+      
+      - key: POSTGRES_PASSWORD
+        value: ${DATABASE_PASSWORD}
+        type: SECRET
+      
+      # Admin credentials
+      - key: ADMIN_PASSWORD
+        value: ${ADMIN_PASSWORD}
+        type: SECRET
+      
+      # Merky FC credentials
+      - key: MERKY_FC_USERNAME
+        value: ${MERKY_FC_USERNAME}
+        type: SECRET
+      
+      - key: MERKY_FC_PASSWORD
+        value: ${MERKY_FC_PASSWORD}
+        type: SECRET
+      
+      # WhatsApp configuration
+      - key: WHATSAPP_GROUP_ID
+        value: ${WHATSAPP_GROUP_ID}
+        type: SECRET
+      
+      # Booking configuration
+      - key: BOOKING_PREFERRED_TIME
+        value: "19:00"
+      
+      - key: BOOKING_AUTO_ENABLED
+        value: "true"
+      
+      - key: BOOKING_HALF_PITCH_THRESHOLD
+        value: "14"
+      
+      - key: BOOKING_FULL_PITCH_THRESHOLD
+        value: "18"
