@@ -1,6 +1,8 @@
 
 # Family Football App ⚽
 
+<!-- Deployment: Railway Ready -->
+
 The **Family Football App** is a comprehensive Streamlit-based application designed to automate and streamline the management of weekly football games. It replaces manual WhatsApp lists and spreadsheet tracking with an integrated system that handles player signups, automatic pitch booking, and end-of-month invoicing.
 
 ## 🎯 What Problem Does This Solve?
