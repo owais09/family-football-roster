@@ -4,10 +4,24 @@ Supports signup updates, booking confirmations, and monthly invoices
 """
 
 import pandas as pd
-import pywhatkit as pwk
 import streamlit as st
 from datetime import datetime
 from config import get_whatsapp_config
+
+# Lazy import pywhatkit to avoid GUI/display issues at module load time
+_pywhatkit = None
+
+def _get_pywhatkit():
+    """Lazy import pywhatkit only when needed"""
+    global _pywhatkit
+    if _pywhatkit is None:
+        try:
+            import pywhatkit as pwk
+            _pywhatkit = pwk
+        except Exception as e:
+            st.warning(f"WhatsApp features disabled: {str(e)}")
+            _pywhatkit = False  # Mark as unavailable
+    return _pywhatkit if _pywhatkit is not False else None
 
 
 class WhatsAppNotifier:
@@ -36,6 +50,11 @@ class WhatsAppNotifier:
         Returns:
             bool: True if successful
         """
+        pwk = _get_pywhatkit()
+        if pwk is None:
+            st.warning("WhatsApp notifications are currently disabled")
+            return False
+            
         try:
             pwk.sendwhatmsg_to_group_instantly(self.group_id, message)
             return True
