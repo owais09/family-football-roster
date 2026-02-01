@@ -17,7 +17,7 @@ RUN apt-get update && apt-get install -y \
 # Install Python dependencies
 COPY Pipfile* ./
 RUN pip install --no-cache-dir pipenv && \
-    pipenv install --system --deploy --ignore-pipfile
+    pipenv install --system --deploy
 
 # Copy application files
 COPY . .
@@ -33,4 +33,4 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
     CMD curl -f http://localhost:8501/_stcore/health || exit 1
 
 # Run Streamlit
-CMD ["streamlit", "run", "src/app.py", "--server.port=8501", "--server.address=0.0.0.0", "--server.headless=true", "--browser.serverAddress=0.0.0.0", "--browser.gatherUsageStats=false"]
+CMD ["python", "-m", "streamlit", "run", "src/app.py", "--server.port=8501", "--server.address=0.0.0.0", "--server.headless=true", "--browser.serverAddress=0.0.0.0", "--browser.gatherUsageStats=false"]
