@@ -36,13 +36,37 @@ def get_config(key_path, default=None):
 
 def get_database_config():
     """Get database configuration"""
-    return {
+    # Check if DATABASE_URL is provided (Railway-style single connection string)
+    database_url = os.getenv('DATABASE_URL')
+    if database_url:
+        # Parse DATABASE_URL: postgresql://user:password@host:port/database
+        try:
+            from urllib.parse import urlparse
+            result = urlparse(database_url)
+            return {
+                'host': result.hostname,
+                'port': result.port or 5432,
+                'database': result.path[1:],  # Remove leading slash
+                'user': result.username,
+                'password': result.password
+            }
+        except Exception as e:
+            raise ValueError(f"Invalid DATABASE_URL format: {str(e)}")
+    
+    # Fallback to individual config values (local development)
+    config = {
         'host': get_config('postgres.host', os.getenv('POSTGRES_HOST')),
         'port': get_config('postgres.port', os.getenv('POSTGRES_PORT', '5432')),
         'database': get_config('postgres.database', os.getenv('POSTGRES_DATABASE', 'postgres')),
         'user': get_config('postgres.user', os.getenv('POSTGRES_USER')),
         'password': get_config('postgres.password', os.getenv('POSTGRES_PASSWORD'))
     }
+    
+    # Validate required fields
+    if not config['host'] or not config['user'] or not config['password']:
+        raise ValueError("Missing required database configuration. Please set DATABASE_URL or individual POSTGRES_* environment variables.")
+    
+    return config
 
 
 def get_admin_password():
