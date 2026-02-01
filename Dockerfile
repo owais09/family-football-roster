@@ -1,4 +1,4 @@
-FROM python:3.9-slim
+FROM python:3.11-slim
 
 WORKDIR /app
 
@@ -14,13 +14,12 @@ RUN apt-get update && apt-get install -y \
     && rm /tmp/google-chrome-stable_current_amd64.deb \
     && rm -rf /var/lib/apt/lists/*
 
-# Install Python dependencies
-COPY Pipfile* ./
-RUN pip install --no-cache-dir pipenv && \
-    pipenv install --system --deploy
-
-# Copy application files
+# Copy application files first
 COPY . .
+
+# Install Python dependencies from requirements.txt
+RUN pip install --no-cache-dir --upgrade pip && \
+    pip install --no-cache-dir -r requirements.txt
 
 # Create .streamlit directory for config
 RUN mkdir -p .streamlit
