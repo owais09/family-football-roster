@@ -11,6 +11,8 @@ RUN apt-get update && apt-get install -y \
     ca-certificates \
     xvfb \
     x11-utils \
+    xauth \
+    x11-xserver-utils \
     && wget -q -O /tmp/google-chrome-stable_current_amd64.deb https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb \
     && apt-get install -y /tmp/google-chrome-stable_current_amd64.deb \
     && rm /tmp/google-chrome-stable_current_amd64.deb \
@@ -18,6 +20,7 @@ RUN apt-get update && apt-get install -y \
 
 # Set up virtual display for pywhatkit
 ENV DISPLAY=:99
+ENV XAUTHORITY=/root/.Xauthority
 
 # Copy application files first
 COPY . .
